@@ -165,15 +165,34 @@ function showPicker(anchorEl, credentials) {
     credentials.forEach(cred => {
         const item = document.createElement('div');
         item.className = 'vm-item';
-        const initial = (cred.username || cred.name || '?')[0].toUpperCase();
-        item.innerHTML = `
-            <div class="vm-avatar">${initial}</div>
-            <div class="vm-info">
-                <div class="vm-name">${escapeHtml(cred.name || cred.username)}</div>
-                <div class="vm-user">${escapeHtml(cred.username)}</div>
-            </div>
-            <div class="vm-fill-badge">Fill</div>
-        `;
+
+        // Avatar — single initial from username (no innerHTML with dynamic data)
+        const avatar = document.createElement('div');
+        avatar.className = 'vm-avatar';
+        avatar.textContent = (cred.username || cred.name || '?')[0].toUpperCase();
+
+        const info = document.createElement('div');
+        info.className = 'vm-info';
+
+        const name = document.createElement('div');
+        name.className = 'vm-name';
+        name.textContent = cred.name || cred.username;
+
+        const user = document.createElement('div');
+        user.className = 'vm-user';
+        user.textContent = cred.username;
+
+        info.appendChild(name);
+        info.appendChild(user);
+
+        const badge = document.createElement('div');
+        badge.className = 'vm-fill-badge';
+        badge.textContent = 'Fill';
+
+        item.appendChild(avatar);
+        item.appendChild(info);
+        item.appendChild(badge);
+
         item.addEventListener('mousedown', (e) => {
             e.preventDefault();
             fillCredential(anchorEl, cred);
