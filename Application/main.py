@@ -19,12 +19,17 @@ class PasswordManager(ctk.CTk):
         self.title("VaultMate - Password Manager")
         self.geometry("900x650")
         
-        # Set window icon
-        _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icon256.png")
-        if os.path.exists(_icon_path):
+        # Set window icon — use PIL for reliable PNG/ICO support
+        _icon_dir = os.path.dirname(os.path.abspath(__file__))
+        try:
+            from PIL import Image, ImageTk as _ITk
+            _img = Image.open(os.path.join(_icon_dir, "icon256.png"))
+            self._app_icon = _ITk.PhotoImage(_img)  # keep reference!
+            self.iconphoto(True, self._app_icon)
+        except Exception:
+            # Fallback: try .ico (Windows) then silent skip
             try:
-                _icon_img = tk.PhotoImage(file=_icon_path)
-                self.iconphoto(True, _icon_img)
+                self.iconbitmap(os.path.join(_icon_dir, "vaultmate.ico"))
             except Exception:
                 pass
         
@@ -149,11 +154,22 @@ class PasswordManager(ctk.CTk):
         self.theme_btn.place(relx=0.98, rely=0.02, anchor="ne") # Show global toggle
         self.main_frame.grid_columnconfigure(0, weight=1)
         
-        title = ctk.CTkLabel(self.main_frame, text="VaultMate", font=ctk.CTkFont(family="Helvetica", size=36, weight="bold"))
-        title.grid(row=0, column=0, pady=(60, 20))
+        # Logo image
+        _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icon128.png")
+        try:
+            from PIL import Image, ImageTk as _ITk
+            _logo_pil = Image.open(_icon_path).resize((80, 80), Image.LANCZOS)
+            _logo_ctk = ctk.CTkImage(light_image=_logo_pil, dark_image=_logo_pil, size=(80, 80))
+            logo_img_lbl = ctk.CTkLabel(self.main_frame, image=_logo_ctk, text="")
+            logo_img_lbl.grid(row=0, column=0, pady=(40, 8))
+            title = ctk.CTkLabel(self.main_frame, text="VaultMate", font=ctk.CTkFont(family="Helvetica", size=32, weight="bold"))
+            title.grid(row=1, column=0, pady=(0, 20))
+        except Exception:
+            title = ctk.CTkLabel(self.main_frame, text="🔐 VaultMate", font=ctk.CTkFont(family="Helvetica", size=36, weight="bold"))
+            title.grid(row=0, column=0, pady=(60, 20))
         
         login_frame = ctk.CTkFrame(self.main_frame, width=400, corner_radius=12)
-        login_frame.grid(row=1, column=0, pady=20)
+        login_frame.grid(row=2, column=0, pady=20)
         login_frame.grid_columnconfigure(0, weight=1)
         
         ctk.CTkLabel(login_frame, text="Login to your Vault", font=ctk.CTkFont(family="Helvetica", size=18)).grid(row=0, column=0, pady=(30, 20))
@@ -348,10 +364,20 @@ class PasswordManager(ctk.CTk):
         # --- Sidebar ---
         self.sidebar_frame = ctk.CTkFrame(self.main_frame, width=220, corner_radius=0, fg_color=("gray90", "gray13"))
         self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(7, weight=1)
+        self.sidebar_frame.grid_rowconfigure(9, weight=1)
         
-        logo_label = ctk.CTkLabel(self.sidebar_frame, text="VaultMate", font=ctk.CTkFont(family="Helvetica", size=26, weight="bold"))
-        logo_label.grid(row=0, column=0, padx=20, pady=(30, 5), sticky="w")
+        _icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icon48.png")
+        try:
+            from PIL import Image as _PILImg
+            _sb_img = _PILImg.open(_icon_path)
+            _sb_ctk = ctk.CTkImage(light_image=_sb_img, dark_image=_sb_img, size=(36, 36))
+            _sb_logo_row = ctk.CTkFrame(self.sidebar_frame, fg_color="transparent")
+            _sb_logo_row.grid(row=0, column=0, padx=16, pady=(24, 2), sticky="w")
+            ctk.CTkLabel(_sb_logo_row, image=_sb_ctk, text="").grid(row=0, column=0, padx=(0, 8))
+            ctk.CTkLabel(_sb_logo_row, text="VaultMate", font=ctk.CTkFont(family="Helvetica", size=20, weight="bold")).grid(row=0, column=1)
+        except Exception:
+            logo_label = ctk.CTkLabel(self.sidebar_frame, text="🔐 VaultMate", font=ctk.CTkFont(family="Helvetica", size=22, weight="bold"))
+            logo_label.grid(row=0, column=0, padx=20, pady=(30, 5), sticky="w")
         
         welcome_lbl = ctk.CTkLabel(self.sidebar_frame, text=f"Hi, {self.current_user['username']}!", font=ctk.CTkFont(family="Helvetica", size=14), text_color="gray")
         welcome_lbl.grid(row=1, column=0, padx=20, pady=(0, 30), sticky="w")

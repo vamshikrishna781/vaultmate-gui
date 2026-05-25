@@ -178,3 +178,23 @@ vaultmate.db
 Application/vaultmate.db
 vaultmate_config.json
 Application/vaultmate_config.json
+
+# VaultMate dev/test scripts (not for end users)
+test_*.py
+Application/test_*.py
+
+# Stale dev notes
+notes.txt
+code_explanation.txt
+
+# Empty/stale directories
+vaultmate-extension/
+extension/
+
+# PyInstaller build output
+Application/build/
+Application/dist/
+*.tar.gz
+*.zip
+*.dmg
+*.AppImage
