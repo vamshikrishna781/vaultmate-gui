@@ -50,6 +50,7 @@ cd VaultMate && ./VaultMate
 > ```bash
 > sudo dnf install python3-tkinter   # Fedora/RHEL
 > sudo apt install python3-tk        # Ubuntu/Debian
+> sudo pacman -S tk #Arch Linux 
 > ```
 
 ---
